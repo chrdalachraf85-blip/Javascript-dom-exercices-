@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A small page using Tailwind CSS and JavaScript." />
+    <title>My Tailwind Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body class="p-8">
+    <div id="onglets" class="space-x-2 mb-4">
+      <button data-filtre="tous" class="px-3 py-1 rounded bg-gray-200">Tous</button>
+      <button data-filtre="actifs" class="px-3 py-1 rounded bg-gray-200">Actifs</button>
+      <button data-filtre="archives" class="px-3 py-1 rounded bg-gray-200">Archivés</button>
+    </div>
+    <p id="resume" class="text-sm text-gray-600"></p>
+    <ul id="liste" class="space-y-1"></ul>
+</body>
+</html>
