@@ -26,6 +26,9 @@ function ajouter(panier, produit){
 
 console.log(ajouter(panier, produit))
 // panier =ajouter(panier, produit)
+
+
+
 const list = document.querySelector("#panier")
 const totalprice = document.querySelector("#total")
 function render(){
