@@ -1,96 +1,72 @@
-const equipes = [
+const teams = [
   { nom: 'Atlas', ville: 'Fès', score: 42 },
   { nom: 'Zénith', ville: 'Agadir', score: 57 },
   { nom: 'Écho', ville: 'Tanger', score: 42 },
   { nom: 'Delta', ville: 'Oujda', score: 13 }
 ];
-let tri = { cle: 'nom', sens: 1 };
+
+let sortState = { key: 'nom', direction: 1 };
 const corps = document.querySelector('#corps');
 const entetes = document.querySelector('#entetes');
 
-function display(data){
-   const tr = document.createElement("tr")
-   const tdname = document.createElement("td")
-   const tdcity = document.createElement("td")
-   const tdscore = document.createElement("td")
-   tdname.textContent= data.nom
-   tdcity.textContent = data.ville
-   tdscore.textContent = data.score
-   tr.append(tdname,tdcity,tdscore)
-   corps.appendChild(tr)
-}
-equipes.forEach((a) => display(a))
-
-function trier(donnees, cle, sens) {
-  return [...donnees].sort((a, b) => {
-    let comparaison;
-
-    if (typeof a[cle] === 'number') {
-      comparaison = a[cle] - b[cle];
+function sortTeams(teamList, key, direction) {
+  return [...teamList].sort((teamA, teamB) => {
+    let comparison;
+    if (typeof teamA[key] === 'number') {
+      comparison = teamA[key] - teamB[key];
     } else {
-      comparaison = a[cle].localeCompare(b[cle], 'fr', {
+      comparison = teamA[key].localeCompare(teamB[key], 'fr', {
+        sensitivity: 'accent'
+      });
+    }
+    if (key === 'score' && comparison === 0) {
+      return teamA.nom.localeCompare(teamB.nom, 'fr', {
         sensitivity: 'accent'
       });
     }
 
-    // Keep equal scores in ascending name order, whichever way scores are sorted.
-    if (cle === 'score' && comparaison === 0) {
-      return a.nom.localeCompare(b.nom, 'fr', {
-        sensitivity: 'accent'
-      });
-    }
-
-    return comparaison * sens;
+    return comparison * direction;
   });
 }
-function afficher() {
-  const equipesTriees = trier(equipes, tri.cle, tri.sens);
+function displayTeams() {
+  const sortedTeams = sortTeams(teams, sortState.key, sortState.direction);
+  const rows = sortedTeams.map(team => {
+    const row = document.createElement('tr');
+    row.classList.add('border-t');
 
-  corps.innerHTML = equipesTriees.map(equipe => `
-    <tr class="border-t">
-      <td class="p-2">${equipe.nom}</td>
-      <td class="p-2">${equipe.ville}</td>
-      <td class="p-2">${equipe.score}</td>
-    </tr>
-  `).join('');
-
-  afficherFleche();
+    [team.nom, team.ville, team.score].forEach(value => {
+      const cell = document.createElement('td');
+      cell.classList.add('p-2');
+      cell.textContent = value;
+      row.append(cell);
+    });
+    return row;
+  });
+  corps.replaceChildren(...rows);
+  displayArrow();
 }
-
-
-
-
-
-
-
-function afficherFleche() {
-  entetes.querySelectorAll('th').forEach(th => {
-    const label = th.textContent.replace(/[ ▲▼]$/u, '');
-    const estActif = th.dataset.cle === tri.cle;
-
-    const fleche = estActif
-      ? (tri.sens === 1 ? ' ▲' : ' ▼')
+function displayArrow() {
+  entetes.querySelectorAll('th').forEach(header => {
+    const label = header.textContent.replace(/[ ▲▼]$/u, '');
+    const arrow = header.dataset.cle === sortState.key
+      ? (sortState.direction === 1 ? ' ▲' : ' ▼')
       : '';
 
-    th.textContent = label + fleche;
+    header.textContent = label + arrow;
   });
 }
 
+entetes.addEventListener('click', event => {
+  const clickedHeader = event.target.closest('th[data-cle]');
+  if (!clickedHeader) return;
+  const clickedKey = clickedHeader.dataset.cle;
 
-
-entetes.addEventListener('click', evenement => {
-  const th = evenement.target.closest('th[data-cle]');
-  if (!th) return;
-
-  const cleCliquee = th.dataset.cle;
-
-  if (tri.cle === cleCliquee) {
-    tri.sens *= -1;
+  if (sortState.key === clickedKey) {
+    sortState.direction *= -1;
   } else {
-    tri = { cle: cleCliquee, sens: 1 };
+    sortState = { key: clickedKey, direction: 1 };
   }
 
-  afficher();
+  displayTeams();
 });
-
-afficher();
+displayTeams();
